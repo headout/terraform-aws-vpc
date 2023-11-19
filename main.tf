@@ -7,6 +7,7 @@ locals {
   len_intra_subnets       = max(length(var.intra_subnets), length(var.intra_subnet_ipv6_prefixes))
   len_outpost_subnets     = max(length(var.outpost_subnets), length(var.outpost_subnet_ipv6_prefixes))
 
+
   max_subnet_length = max(
     local.len_private_subnets,
     local.len_public_subnets,
@@ -147,7 +148,7 @@ resource "aws_route" "public_internet_gateway" {
 
   route_table_id         = aws_route_table.public[0].id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.this[0].id
+  gateway_id             = var.create_igw ? aws_internet_gateway.this[0].id : var.igw_id
 
   timeouts {
     create = "5m"
@@ -159,7 +160,7 @@ resource "aws_route" "public_internet_gateway_ipv6" {
 
   route_table_id              = aws_route_table.public[0].id
   destination_ipv6_cidr_block = "::/0"
-  gateway_id                  = aws_internet_gateway.this[0].id
+  gateway_id                  = var.create_igw ? aws_internet_gateway.this[0].id : var.igw_id
 }
 
 ################################################################################
@@ -416,7 +417,7 @@ resource "aws_route" "database_internet_gateway" {
 
   route_table_id         = aws_route_table.database[0].id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.this[0].id
+  gateway_id             = var.create_igw ? aws_internet_gateway.this[0].id : var.igw_id
 
   timeouts {
     create = "5m"
